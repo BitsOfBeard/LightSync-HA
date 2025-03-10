@@ -1,0 +1,17 @@
+home_assistant:  
+  url: "assistant.localnetwork"  # Use your Home Assistant portal, IP address should also work
+  token: "{{ YOUR_HA_TOKEN }}" # collect from Home Assistant -> Your username -> Security -> Long-lived access tokens
+  light_entity_id: "light.behind_screen" # define the light used for syncing. This needs to be the name Home Assistant recognizes the light with.
+
+brightness:  
+  min_threshold: 5  
+  max_screen: 255  
+  power_factor: 0.8  
+  min_light: 1  
+  max_light: 100  
+
+update:  
+  color_threshold: 20  
+  brightness_threshold: 15  
+  force_interval: 5  
+  sleep_interval: 0.10  
