@@ -1,17 +1,51 @@
-home_assistant:  
-  url: "assistant.localnetwork"  # Use your Home Assistant portal, IP address should also work
-  token: "{{ YOUR_HA_TOKEN }}" # collect from Home Assistant -> Your username -> Security -> Long-lived access tokens
-  light_entity_id: "light.behind_screen" # define the light used for syncing. This needs to be the name Home Assistant recognizes the light with.
+home_assistant:
+  # Include scheme and port for clarity.
+  # Examples:
+  #   https://homeassistant.local:8123
+  #   https://192.168.1.50:8123
+  url: "https://assistant.local:8123"
 
-brightness:  
-  min_threshold: 5  
-  max_screen: 255  
-  power_factor: 0.8  
-  min_light: 1  
-  max_light: 100  
+  # Prefer setting HA_TOKEN as an environment variable.
+  # This fallback is here for convenience only.
+  token: "{{ YOUR_HA_TOKEN }}"
 
-update:  
-  color_threshold: 20  
-  brightness_threshold: 15  
-  force_interval: 5  
-  sleep_interval: 0.10  
+  # The Home Assistant light entity to control.
+  light_entity_id: "light.behind_screen"
+
+brightness:
+  # If the computed screen luminance is below this threshold,
+  # LightSync turns the light off.
+  min_threshold: 5
+
+  # Maximum expected screen luminance from 8-bit RGB input.
+  max_screen: 255
+
+  # Controls how aggressively screen brightness maps to bulb brightness.
+  # 1.0 = linear
+  # < 1.0 = brighter in darker scenes
+  # > 1.0 = dimmer in darker scenes
+  power_factor: 0.8
+
+  # Clamp output sent to the bulb when it is on.
+  min_light: 1
+  max_light: 100
+
+update:
+  # RGB Euclidean distance needed to trigger an immediate update.
+  color_threshold: 20
+
+  # Luminance difference needed to trigger an immediate update.
+  brightness_threshold: 15
+
+  # Send a refresh even if changes are small.
+  force_interval: 5
+
+  # Delay between screen samples.
+  sleep_interval: 0.10
+
+capture:
+  # 1 = primary monitor in MSS.
+  monitor_index: 1
+
+  # Resize captured image before averaging for lower CPU usage.
+  downsample_size: 100
