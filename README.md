@@ -50,3 +50,82 @@ If protected video playback renders as a black frame to screen capture on your s
 git clone https://github.com/BitsOfBeard/LightSync-HA.git
 cd LightSync-HA
 pip install -r requirements.txt
+```
+
+## Configuration
+
+Copy `config_example.yaml` to `config.yaml` and update the values.
+
+You can set the Home Assistant token in either of two ways:
+
+Use an environment variable:
+
+```bash
+export HA_TOKEN="your_token_here"
+```
+
+Or put it in `config.yaml`.
+
+Using an environment variable is recommended.
+
+## Example config
+
+```yaml
+home_assistant:
+  url: "https://assistant.local:8123"
+  token: "{{ YOUR_HA_TOKEN }}"
+  light_entity_id: "light.behind_screen"
+
+brightness:
+  min_threshold: 5
+  max_screen: 255
+  power_factor: 0.8
+  min_light: 1
+  max_light: 100
+
+update:
+  color_threshold: 20
+  brightness_threshold: 15
+  force_interval: 5
+  sleep_interval: 0.10
+
+capture:
+  monitor_index: 1
+  downsample_size: 100
+```
+
+## Running
+
+```bash
+python lightsync.py
+```
+
+Optional profiling:
+
+```bash
+ENABLE_PROFILING=1 python lightsync.py
+```
+
+Optional verbose logging:
+
+```bash
+LOG_LEVEL=DEBUG python lightsync.py
+```
+
+## How it works
+
+LightSync captures the selected monitor, downsamples the frame, computes the average RGB color, and converts that into an approximate luminance value using:
+
+`0.2126 * R + 0.7152 * G + 0.0722 * B`
+
+That brightness value is then mapped onto Home Assistant light brightness using a configurable power curve. Large changes in color or brightness trigger immediate updates, and a periodic forced update keeps the light in sync even during slow scene changes.
+
+## Notes on movies and streaming services
+
+Local files and ordinary browser playback should generally work.
+
+Streaming services that use DRM may not work for ambient sync, because some systems expose protected video to screen capture as a black frame. If that happens, LightSync is behaving correctly from its point of view, but it only sees black.
+
+## Safety note
+
+This project sends frequent light updates. If your light or integration is rate-limited, increase `sleep_interval` and the update thresholds.
