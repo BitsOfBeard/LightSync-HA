@@ -144,3 +144,4 @@ LightSync uses:
 - `PyYAML` for configuration loading
 
 ## License
+MIT
